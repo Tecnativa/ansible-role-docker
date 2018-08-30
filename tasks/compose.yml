@@ -1,0 +1,10 @@
+- name: (un)install docker compose
+  pip:
+    name: docker-compose
+    state: "{{ 'latest' if docker_role.compose.present else 'absent' }}"
+
+- name: check docker compose is installed correctly
+  command: docker-compose --version
+  changed_when: false
+  when:
+  - docker_role.compose.present

@@ -1,0 +1,7 @@
+[Unit]
+Description=Clean up udev database
+Requires=udev.service
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/udevadm info --cleanup-db

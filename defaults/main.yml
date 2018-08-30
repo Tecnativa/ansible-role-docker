@@ -1,0 +1,2 @@
+# Override at will, with the same format as `docker_role_defaults`
+docker_role_custom: {}

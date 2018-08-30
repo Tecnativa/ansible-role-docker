@@ -1,0 +1,60 @@
+- when:
+  - docker_role.app.present
+  block:
+  - name: check current docker app installation
+    command: "{{ docker_role.app.path|quote }} --version"
+    changed_when: false
+    register: result
+    ignore_errors: true
+
+  - when:
+    - result.failed|d(False) or
+      not result.stdout.startswith(
+        'docker-app version v%s,'|format(docker_role.app.version)
+      )
+    block:
+    - name: create temporary directory to download docker-app
+      tempfile:
+        state: directory
+      register: tmpdir
+
+    - name: download docker app release
+      get_url:
+        checksum: sha256:{{ docker_role.app.checksum }}
+        dest: &tarfile "{{ tmpdir.path }}/docker-app.tar.gz"
+        url: >
+          https://github.com/docker/app/releases/download/v
+          {{- docker_role.app.version -}}
+          /docker-app-{{ ansible_system|lower }}.tar.gz
+
+    - name: uncompress docker app release
+      unarchive:
+        dest: &tmpdir "{{ tmpdir.path }}"
+        group: &user "{{ ansible_user }}"
+        mode: a=rx,u+w
+        owner: *user
+        remote_src: true
+        src: *tarfile
+
+    # Ansible has no "move" module, so we hardlink and remove later
+    - name: hardlink docker app binary
+      file:
+        path: "{{ docker_role.app.path }}"
+        state: hard
+        src: "{{ tmpdir.path }}/docker-app-{{ ansible_system|lower }}"
+
+    - name: remove temporary installation files
+      file:
+        path: *tmpdir
+        state: absent
+
+    - name: check docker app is installed correctly
+      command: "{{ docker_role.app.path|quote }} --version"
+      changed_when: false
+
+- name: uninstall docker-app
+  file:
+    path: "{{ docker_role.app.path }}"
+    state: absent
+  when:
+  - not docker_role.app.present
