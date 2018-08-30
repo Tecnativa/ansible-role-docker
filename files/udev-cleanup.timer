@@ -1,0 +1,8 @@
+[Unit]
+Description=Clean up udev database
+
+[Timer]
+OnCalendar=daily
+
+[Install]
+WantedBy=timers.target

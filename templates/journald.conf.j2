@@ -1,0 +1,5 @@
+[Journal]
+# Allow this messages amount in this time frame, keeping in mind that all
+# running Docker containers share the same journald unit
+RateLimitInterval={{ docker_role.engine.journald_limits.interval }}
+RateLimitBurst={{ docker_role.engine.journald_limits.burst }}

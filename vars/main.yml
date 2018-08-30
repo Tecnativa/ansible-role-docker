@@ -1,0 +1,47 @@
+# Override any of these in the `docker_role_custom` variable,
+# but NEVER override `docker_role_defaults` itself
+docker_role_defaults:
+  _testing_mode: false # Only for CI; NEVER override
+
+  app:
+    # FIXME Enable by default when docker-app gets stable
+    present: false
+    path: /usr/local/bin/docker-app
+
+    # TODO Update these as new versions get released
+    version: "0.4.1"
+    checksum: a72315eea64e6b098ed0d1502643408579af60a806b000eb4fd4220d7d34fc79
+
+  compose:
+    present: true
+    version: latest
+
+  engine:
+    # See https://docs.docker.com/engine/reference/commandline/dockerd/
+    config:
+      group: admin # Let all sudoers to use docker without sudo
+      hosts:
+      - fd:// # Systemd docker socket
+      icc: false
+      log-driver: journald
+      storage-driver: overlay2
+
+    present: true
+
+    # These limits avoid missing container logs when the log driver is
+    # journald; see https://github.com/moby/moby/issues/31058
+    journald_limits:
+      burst: 10000
+      interval: 10s
+
+  machine:
+    present: true
+    path: /usr/local/bin/docker-machine
+
+    # TODO Update these as new versions get released
+    version: "0.15.0"
+    checksums:
+      aarch64: 94d3846deaed2df4135824e2968dc64254e51d6431ca50c20f193b78e9683e5a
+      armhf: 59764aeb9fb729931693736b8f15a67f4867b89bd242979b89d029f5946eeca5
+      x86_64: 44c5c62db13b6eb6a9d3e276c1181401c78327ff6303570936ba2cf5d137b7b5
+

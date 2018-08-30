@@ -1,0 +1,163 @@
+- name: remove old docker packages, we use docker-ce today
+  package:
+    state: absent
+    name:
+    - docker-engine
+    - docker.io
+    - lxc-docker
+
+- name: remove unused docker storage engines files
+  file:
+    path: "/var/lib/docker/{{ item }}"
+    state: absent
+  loop:
+  - aufs
+  - btrfs
+  - devicemapper
+  - overlay
+  - overlay2
+  - zfs
+  when:
+  - item != docker_role.engine.config['storage-driver'] or
+    not docker_role.engine.present
+
+- when:
+  - &when_present docker_role.engine.present
+  block:
+  - name: create or remove docker systemd configuration folder
+    file:
+      mode: a=rx,u+w
+      path: /etc/systemd/system/docker.service.d
+      state: &directory
+        "{{ 'directory' if docker_role.engine.present else 'absent' }}"
+
+  - name: customize docker systemd service
+    copy:
+      dest: &conf_systemd
+        /etc/systemd/system/docker.service.d/ansible-role-docker.conf
+      group: root
+      mode: a=r,u+w
+      owner: root
+      src: docker-systemd.conf
+    notify: reload dockerd
+
+  - name: create docker configuration folder
+    file:
+      mode: u=rwx,go=
+      path: &conf_docker /etc/docker
+      state: *directory
+
+  - name: configure docker daemon
+    copy:
+      content: "{{ docker_role.engine.config|to_nice_json }}"
+      dest: /etc/docker/daemon.json
+      group: root
+      mode: u=rwx,go=
+      owner: root
+    notify: reload dockerd
+
+  - name: create /etc/default/grub.d directory
+    file:
+      group: root
+      mode: a=rx,u+w
+      owner: root
+      path: /etc/default/grub.d
+      state: directory
+
+  - name: enable memory and swap accounting after next reboot
+    copy:
+      dest: &conf_grub /etc/default/grub.d/ansible-role-docker.cfg
+      group: root
+      mode: u=rw,go=
+      owner: root
+      src: grub.cfg
+    notify: update grub
+
+  - name: add journald.conf.d directory
+    file:
+      path: /etc/systemd/journald.conf.d
+      state: directory
+      mode: a=rx,u+w
+
+  # HACK https://github.com/moby/moby/issues/31058
+  - name: configure bigger journald rate limits to avoid missing logs
+    template:
+      dest: &conf_journald
+        /etc/systemd/journald.conf.d/ansible-role-docker.conf
+      mode: a=r,u+w
+      src: journald.conf.j2
+    notify: restart journald
+
+  # HACK https://groups.google.com/d/msg/nomad-tool/6L6QbL6QzY4/1r8uvvSlCAAJ
+  - name: add udev cleanup systemd timer
+    copy:
+      dest: &conf_udev_timer /etc/systemd/system/udev-cleanup.timer
+      group: root
+      mode: u=rw,go=r
+      owner: root
+      src: udev-cleanup.timer
+
+  - name: add udev cleanup systemd service
+    copy:
+      dest: &conf_udev_service /etc/systemd/system/udev-cleanup.service
+      group: root
+      mode: u=rw,go=r
+      owner: root
+      src: udev-cleanup.service
+
+- name: remove specific configurations for docker engine
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+  - *conf_docker
+  - *conf_grub
+  - *conf_journald
+  - *conf_systemd
+  - *conf_udev_service
+  - *conf_udev_timer
+  when:
+  - not docker_role.engine.present
+
+- name: (dis/en)able udev cleanup timer
+  service:
+    name: udev-cleanup.timer
+    enabled: &present_bool "{{ docker_role.engine.present }}"
+  ignore_errors: &testing_mode "{{ docker_role._testing_mode }}"
+
+- name: (un)install apt key for the official docker repository
+  apt_key:
+    data: "{{ lookup('file', 'docker-apt-gpg.key') }}"
+    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    state: &present_str
+      "{{ 'present' if docker_role.engine.present else 'absent' }}"
+
+- name: (un)install upstream docker stable apt repository
+  apt_repository:
+    filename: docker
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu
+          {{ ansible_lsb['codename'] }} stable
+    state: *present_str
+
+- name: (un)install docker-ce stable
+  package:
+    name: docker-ce
+    state: &latest
+      "{{ 'latest' if docker_role.engine.present else 'absent' }}"
+  notify: reload dockerd
+
+- name: (dis/en)able dockerd
+  service:
+    name: docker
+    enabled: *present_bool
+  ignore_errors: *testing_mode
+  notify: reload dockerd
+
+- name: check docker is installed correctly
+  command: docker --version
+  changed_when: false
+  when:
+  - *when_present
+
+- name: run any notified handlers
+  meta: flush_handlers

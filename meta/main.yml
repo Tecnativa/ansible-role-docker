@@ -1,0 +1,14 @@
+galaxy_info:
+  author: Jairo Llopis
+  description: All you need to boot a Docker server
+  company: Tecnativa
+  license: Apache
+  min_ansible_version: 2.6
+  platforms:
+  - name: Ubuntu
+    versions:
+    - 18.04
+  galaxy_tags:
+  - docker
+  - doodba
+dependencies: []

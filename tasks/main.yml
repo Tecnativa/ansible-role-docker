@@ -1,0 +1,14 @@
+- name: get docker configuration
+  set_fact:
+    docker_role:
+      "{{ docker_role_defaults|combine(docker_role_custom, recursive=True) }}"
+
+- name: display current role configuration
+  debug:
+    var: docker_role
+    verbosity: 1
+
+- import_tasks: engine.yml
+- import_tasks: app.yml
+- import_tasks: compose.yml
+- import_tasks: machine.yml

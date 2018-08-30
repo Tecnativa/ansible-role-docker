@@ -1,0 +1,17 @@
+sudo: required
+services:
+- docker
+
+env:
+- os_version=16.04
+- os_version=18.04
+
+install:
+- docker image build -t test -f test.dockerfile
+  --build-arg "os_version=$os_version" .
+
+script:
+- &install docker container run --rm -it --init test -e install=true
+- *install
+- &uninstall docker container run --rm -it --init test -e install=false
+- *uninstall
