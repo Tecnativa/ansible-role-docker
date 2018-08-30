@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Tecnativa/ansible-role-docker.svg?branch=master)](https://travis-ci.org/Tecnativa/ansible-role-docker)
+
 # Docker
 
 Set up docker servers with all of the docker project software stack.
