@@ -3,6 +3,7 @@
   block:
   - name: check current docker app installation
     command: "{{ docker_role.app.path|quote }} --version"
+    changed_when: false
     register: result
     ignore_errors: true
 
