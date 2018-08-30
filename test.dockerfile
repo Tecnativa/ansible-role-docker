@@ -4,7 +4,6 @@ FROM ubuntu:${os_version}
 CMD [ "sleep", "3600" ]
 RUN apt-get update \
   && apt-get install -yqq \
-    apt-transport-https \
     build-essential \
     libffi-dev \
     libssl-dev \

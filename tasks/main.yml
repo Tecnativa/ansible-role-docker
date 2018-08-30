@@ -8,6 +8,15 @@
     var: docker_role
     verbosity: 1
 
+- name: install basic harmless dependencies
+  package:
+    name:
+    - apt-transport-https
+    - gzip
+    - python3-pip
+    - tar
+    state: latest
+
 - import_tasks: engine.yml
 - import_tasks: app.yml
 - import_tasks: compose.yml

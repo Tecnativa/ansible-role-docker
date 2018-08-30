@@ -13,13 +13,6 @@
         'docker-app version v%s,'|format(docker_role.app.version)
       )
     block:
-    - name: install packages required to uncompress downloaded file
-      package:
-        name:
-        - gzip
-        - tar
-        state: latest
-
     - name: create temporary directory to download docker-app
       tempfile:
         state: directory
