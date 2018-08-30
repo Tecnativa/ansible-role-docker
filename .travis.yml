@@ -10,8 +10,19 @@ install:
 - docker image build -t test -f test.dockerfile
   --build-arg "os_version=$os_version" .
 
+before_script:
+- container=$(docker container run -d --init test)
+
 script:
-- &install docker container run --rm -it --init test -e install=true
-- *install
-- &uninstall docker container run --rm -it --init test -e install=false
-- *uninstall
+# Install twice
+- install=true
+- &run docker container exec -it $container
+  ansible-playbook test.yml -i inventory.cfg -v -e install=$install
+- *run
+# Uninstall twice
+- install=false
+- *run
+- *run
+
+after_script:
+- docker container stop $container
