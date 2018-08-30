@@ -8,6 +8,8 @@
     enabled: true
     state: reloaded
   ignore_errors: *testing_mode
+  when:
+  - docker_role.engine.present
 
 - name: restart journald
   service:
