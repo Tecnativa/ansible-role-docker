@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: docker
   author: Jairo Llopis
   description: All you need to boot a Docker server
   company: Tecnativa
