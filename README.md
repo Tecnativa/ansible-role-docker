@@ -1,6 +1,8 @@
-[![Build Status](https://travis-ci.org/Tecnativa/ansible-role-docker.svg?branch=master)](https://travis-ci.org/Tecnativa/ansible-role-docker)
-
 # Docker
+
+[![Build Status](https://travis-ci.org/Tecnativa/ansible-role-docker.svg?branch=master)](https://travis-ci.org/Tecnativa/ansible-role-docker)
+[![GitHub license](https://img.shields.io/github/license/Tecnativa/ansible-role-docker.svg)](https://github.com/Tecnativa/ansible-role-docker/blob/master/LICENSE)
+[![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-yajo.docker-blue.svg)][galaxy]
 
 Set up docker servers with all of the docker project software stack.
 
@@ -31,7 +33,7 @@ if you need to query any configurations in other roles or tasks.
 ```yaml
 - hosts: docker
   roles:
-  - role: docker
+  - role: yajo.docker
     vars:
       docker_role_custom:
         app: &install
@@ -49,6 +51,8 @@ if you need to query any configurations in other roles or tasks.
 
 - [Issue Tracker](https://github.com/Tecnativa/ansible-role-docker/issues).
 
+- [Install from Ansible Galaxy][galaxy].
+
 - Are you a [Doodba][] user? Welcome to the family! 👪🐳
 
   This project and [Doodba][] are completely independent, but interoperability
@@ -65,4 +69,5 @@ development, installation, maintenance and hosting services.
 
 [ansible-py3]: https://docs.ansible.com/ansible/latest/reference_appendices/python_3_support.html
 [Doodba]: https://github.com/Tecnativa/doodba
+[galaxy]: https://galaxy.ansible.com/yajo/docker
 [Tecnativa]: https://www.tecnativa.com
