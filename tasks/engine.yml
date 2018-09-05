@@ -124,6 +124,7 @@
   service:
     name: udev-cleanup.timer
     enabled: &present_bool "{{ docker_role.engine.present }}"
+  ignore_errors: "{{ not docker_role.engine.present }}"
 
 - name: (un)install apt key for the official docker repository
   apt_key:
