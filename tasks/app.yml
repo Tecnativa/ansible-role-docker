@@ -30,17 +30,16 @@
     - name: uncompress docker app release
       unarchive:
         dest: &tmpdir "{{ tmpdir.path }}"
+        remote_src: true
+        src: *tarfile
+
+    - name: copy docker app binary to an executable
+      copy:
+        dest: "{{ docker_role.app.path }}"
         group: &user "{{ ansible_user }}"
         mode: a=rx,u+w
         owner: *user
         remote_src: true
-        src: *tarfile
-
-    # Ansible has no "move" module, so we hardlink and remove later
-    - name: hardlink docker app binary
-      file:
-        path: "{{ docker_role.app.path }}"
-        state: hard
         src: "{{ tmpdir.path }}/docker-app-{{ ansible_system|lower }}"
 
     - name: remove temporary installation files

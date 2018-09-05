@@ -13,7 +13,7 @@
     name:
     - apt-transport-https
     - gzip
-    - python3-pip
+    - python{% if ansible_python.version.major == 3 %}3{% endif %}-pip
     - tar
     state: latest
 

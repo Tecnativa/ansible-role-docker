@@ -1,8 +1,6 @@
 # Override any of these in the `docker_role_custom` variable,
 # but NEVER override `docker_role_defaults` itself
 docker_role_defaults:
-  _testing_mode: false # Only for CI; NEVER override
-
   app:
     # FIXME Enable by default when docker-app gets stable
     present: false
@@ -11,6 +9,9 @@ docker_role_defaults:
     # TODO Update these as new versions get released
     version: "0.4.1"
     checksum: a72315eea64e6b098ed0d1502643408579af60a806b000eb4fd4220d7d34fc79
+
+  # In case you use another, it will not be updated
+  bootloader: grub
 
   compose:
     present: true
