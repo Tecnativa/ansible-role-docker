@@ -6,6 +6,8 @@ python:
   - "3.6"
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
+env:
+  ANSIBLE_VERBOSITY: 1
 script:
   - docker container run --rm -it
       -v /var/run/docker.sock:/var/run/docker.sock:ro
