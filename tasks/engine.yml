@@ -149,7 +149,6 @@
   service:
     name: docker
     enabled: *present_bool
-  ignore_errors: *testing_mode
   notify: reload dockerd
 
 - name: check docker is installed correctly
