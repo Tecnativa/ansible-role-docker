@@ -4,6 +4,8 @@ services:
 language: python
 python:
   - "3.6"
+notifications:
+  webhooks: https://galaxy.ansible.com/api/v1/notifications/
 script:
   - docker container run --rm -it
       -v /var/run/docker.sock:/var/run/docker.sock:ro
