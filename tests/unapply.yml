@@ -3,8 +3,8 @@
   - role: ../..
     vars:
       docker_role_custom:
-        app: &install {present: false}
+        app: &uninstall {present: false}
         bootloader: false
-        compose: *install
-        engine: *install
-        machine: *install
+        compose: *uninstall
+        engine: *uninstall
+        machine: *uninstall

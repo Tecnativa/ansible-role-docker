@@ -11,5 +11,9 @@
         app: &install {present: true}
         bootloader: false
         compose: *install
-        engine: *install
+        engine:
+          present: true
+          config:
+            # Overlay2 fails in travis
+            storage-driver: vfs
         machine: *install
