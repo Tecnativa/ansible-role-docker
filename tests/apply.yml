@@ -4,13 +4,6 @@
     - role: yajo.ansible_test_playground
 
 - hosts: test-playground
-  tasks:
-  - name: install grub
-    package:
-      name: grub
-      state: latest
-
-- hosts: test-playground
   roles:
   - role: ../..
     vars:
