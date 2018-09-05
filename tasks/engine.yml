@@ -16,6 +16,7 @@
   - devicemapper
   - overlay
   - overlay2
+  - vfs
   - zfs
   when:
   - item != docker_role.engine.config['storage-driver'] or
@@ -123,7 +124,7 @@
   service:
     name: udev-cleanup.timer
     enabled: &present_bool "{{ docker_role.engine.present }}"
-  ignore_errors: &testing_mode "{{ docker_role._testing_mode }}"
+  ignore_errors: &absent_bool "{{ not docker_role.engine.present }}"
 
 - name: (un)install apt key for the official docker repository
   apt_key:
@@ -140,7 +141,8 @@
     state: *present_str
 
 - name: (un)install docker-ce stable
-  package:
+  apt:
+    autoremove: *absent_bool
     name: docker-ce
     state: &latest
       "{{ 'latest' if docker_role.engine.present else 'absent' }}"
@@ -150,8 +152,11 @@
   service:
     name: docker
     enabled: *present_bool
-  ignore_errors: *testing_mode
-  notify: reload dockerd
+    state: "{{ 'started' if docker_role.engine.present else 'stopped' }}"
+  # HACK to pass idempotency test in `unapply.yml`
+  # TODO remove when https://github.com/ansible/ansible/issues/31344 is fixed
+  register: result
+  changed_when: "result.changed and docker_role.engine.present"
 
 - name: check docker is installed correctly
   command: docker --version

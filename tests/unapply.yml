@@ -1,0 +1,15 @@
+# Create the playground
+- hosts: test-playground-controller
+  roles:
+    - role: yajo.ansible_test_playground
+
+- hosts: test-playground
+  roles:
+  - role: ../..
+    vars:
+      docker_role_custom:
+        app: &uninstall {present: false}
+        bootloader: false
+        compose: *uninstall
+        engine: *uninstall
+        machine: *uninstall
