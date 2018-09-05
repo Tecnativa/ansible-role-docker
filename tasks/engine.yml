@@ -123,7 +123,6 @@
   service:
     name: udev-cleanup.timer
     enabled: &present_bool "{{ docker_role.engine.present }}"
-  ignore_errors: &testing_mode "{{ docker_role._testing_mode }}"
 
 - name: (un)install apt key for the official docker repository
   apt_key:

@@ -1,8 +1,6 @@
 # Override any of these in the `docker_role_custom` variable,
 # but NEVER override `docker_role_defaults` itself
 docker_role_defaults:
-  _testing_mode: false # Only for CI; NEVER override
-
   app:
     # FIXME Enable by default when docker-app gets stable
     present: false

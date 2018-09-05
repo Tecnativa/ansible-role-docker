@@ -1,6 +1,5 @@
 - name: update grub
   command: update-grub
-  ignore_errors: &testing_mode "{{ docker_role._testing_mode }}"
 
 - name: reload dockerd
   service:
@@ -19,5 +18,5 @@
   delay: 3
   ignore_errors: *testing_mode
   register: journald_restart
-  retries: "{{ 1 if docker_role._testing_mode else 5 }}"
+  retries: 5
   until: journald_restart.changed

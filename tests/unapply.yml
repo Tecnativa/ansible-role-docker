@@ -1,0 +1,9 @@
+- hosts: test-playground
+  roles:
+  - role: ../..
+    vars:
+      docker_role_custom:
+        app: &install {present: false}
+        compose: *install
+        engine: *install
+        machine: *install
