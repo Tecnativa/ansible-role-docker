@@ -1,5 +1,5 @@
 - hosts: test-playground-controller
   roles:
-    - role: yajo.ansible_test_playground
+    - role: ../../../ansible-test-playground
       vars:
         test_playground_state: absent

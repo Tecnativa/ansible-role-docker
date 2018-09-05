@@ -16,6 +16,7 @@
   - devicemapper
   - overlay
   - overlay2
+  - vfs
   - zfs
   when:
   - item != docker_role.engine.config['storage-driver'] or
