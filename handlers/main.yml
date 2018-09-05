@@ -1,5 +1,7 @@
 - name: update grub
   command: update-grub
+  when:
+  - docker_role.bootloader == 'grub'
 
 - name: reload dockerd
   service:

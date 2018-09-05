@@ -16,6 +16,7 @@
     vars:
       docker_role_custom:
         app: &install {present: true}
+        bootloader: false
         compose: *install
         engine: *install
         machine: *install

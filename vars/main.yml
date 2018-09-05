@@ -10,6 +10,9 @@ docker_role_defaults:
     version: "0.4.1"
     checksum: a72315eea64e6b098ed0d1502643408579af60a806b000eb4fd4220d7d34fc79
 
+  # In case you use another, it will not be updated
+  bootloader: grub
+
   compose:
     present: true
     version: latest
