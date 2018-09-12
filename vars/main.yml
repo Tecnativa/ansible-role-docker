@@ -20,9 +20,6 @@ docker_role_defaults:
   engine:
     # See https://docs.docker.com/engine/reference/commandline/dockerd/
     config:
-      group: admin # Let all sudoers to use docker without sudo
-      hosts:
-      - fd:// # Systemd docker socket
       icc: false
       log-driver: journald
       storage-driver: overlay2
