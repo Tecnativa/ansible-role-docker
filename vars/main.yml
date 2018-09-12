@@ -42,3 +42,14 @@ docker_role_defaults:
       aarch64: 94d3846deaed2df4135824e2968dc64254e51d6431ca50c20f193b78e9683e5a
       armhf: 59764aeb9fb729931693736b8f15a67f4867b89bd242979b89d029f5946eeca5
       x86_64: 44c5c62db13b6eb6a9d3e276c1181401c78327ff6303570936ba2cf5d137b7b5
+
+  swarm:
+    # Define the {IP/interface}[:port] where to listen for swarm nodes
+    advertise_address: "{{ ansible_default_ipv4.address|d('eth0') }}"
+
+    present: true
+
+    # These are ansible host patterns that match a swarm;
+    # see `tests/inventory.cfg` as an example to have more than 1 swarm
+    managers: swarm-manager
+    workers: swarm-worker

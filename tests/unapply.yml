@@ -13,3 +13,4 @@
         compose: *uninstall
         engine: *uninstall
         machine: *uninstall
+        swarm: *uninstall

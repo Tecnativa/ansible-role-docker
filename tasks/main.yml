@@ -1,3 +1,18 @@
+- name: install basic harmless dependencies
+  package:
+    name:
+    - apt-transport-https
+    - gzip
+    - iproute2
+    - python{% if ansible_python.version.major == 3 %}3{% endif %}-pip
+    - tar
+    state: present
+
+# Just in case we're missing the default ipv4, as explained in
+# https://stackoverflow.com/a/50373356/1468388
+- name: refresh facts
+  setup:
+
 - name: get docker configuration
   set_fact:
     docker_role:
@@ -8,16 +23,8 @@
     var: docker_role
     verbosity: 1
 
-- name: install basic harmless dependencies
-  package:
-    name:
-    - apt-transport-https
-    - gzip
-    - python{% if ansible_python.version.major == 3 %}3{% endif %}-pip
-    - tar
-    state: latest
-
 - import_tasks: engine.yml
+- import_tasks: swarm/main.yml
 - import_tasks: app.yml
 - import_tasks: compose.yml
 - import_tasks: machine.yml

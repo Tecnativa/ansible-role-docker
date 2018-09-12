@@ -1,0 +1,5 @@
+- name: leave swarm
+  command: docker swarm leave --force
+  register: stdout
+  changed_when: "'Node left the swarm.' in result.stdout"
+  failed_when: false

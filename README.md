@@ -41,6 +41,7 @@ if you need to query any configurations in other roles or tasks.
         compose: *install
         engine: *install
         machine: *install
+        swarm: *install
 ```
 
 ## Support
