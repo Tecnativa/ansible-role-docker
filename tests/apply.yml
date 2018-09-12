@@ -8,12 +8,19 @@
   - role: ../..
     vars:
       docker_role_custom:
-        app: &install {present: true}
+        app:
+          present: true
         bootloader: false
-        compose: *install
+        compose:
+          present: true
         engine:
           present: true
           config:
             # overlay2 driver fails inside containers
             storage-driver: vfs
-        machine: *install
+        machine:
+          present: true
+        swarm:
+          present: true
+          managers: "{{ swarm_managers_pattern }}"
+          workers: "{{ swarm_workers_pattern }}"
