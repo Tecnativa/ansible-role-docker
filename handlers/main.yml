@@ -3,6 +3,28 @@
   when:
   - docker_role.bootloader == 'grub'
 
+- name: reload systemd
+  systemd:
+    daemon_reload: true
+
+- name: (dis/en)able udev cleanup timer
+  service:
+    name: udev-cleanup.timer
+    enabled: "{{ docker_role.engine.present }}"
+  ignore_errors: "{{ not docker_role.engine.present }}"
+
+- name: (dis/en)able dockerd
+  service:
+    name: docker
+    enabled: "{{ docker_role.engine.present }}"
+    state: "{{ 'started' if docker_role.engine.present else 'stopped' }}"
+  # HACK to pass idempotency test in `unapply.yml`
+  # TODO remove when https://github.com/ansible/ansible/issues/31344 is fixed
+  register: result
+  changed_when: "result.changed and docker_role.engine.present"
+  retries: 4
+  delay: 5
+
 - name: reload dockerd
   service:
     name: docker

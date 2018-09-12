@@ -32,7 +32,7 @@
       state: &directory
         "{{ 'directory' if docker_role.engine.present else 'absent' }}"
 
-  - name: customize docker systemd service
+  - name: allow systemd docker service to listen on configured hosts
     copy:
       dest: &conf_systemd
         /etc/systemd/system/docker.service.d/ansible-role-docker.conf
@@ -40,7 +40,19 @@
       mode: a=r,u+w
       owner: root
       src: docker-systemd.conf
-    notify: reload dockerd
+    notify:
+      - reload systemd
+      - reload dockerd
+    when: docker_role.engine.config.hosts|d(False)
+
+  - name: make dockerd listen in its default systemd-controlled socket
+    file:
+      path: *conf_systemd
+      state: absent
+    when: not docker_role.engine.config.hosts|d(False)
+    notify:
+      - reload systemd
+      - reload dockerd
 
   - name: create docker configuration folder
     file:
@@ -87,7 +99,9 @@
         /etc/systemd/journald.conf.d/ansible-role-docker.conf
       mode: a=r,u+w
       src: journald.conf.j2
-    notify: restart journald
+    notify:
+      - reload systemd
+      - restart journald
 
   # HACK https://groups.google.com/d/msg/nomad-tool/6L6QbL6QzY4/1r8uvvSlCAAJ
   - name: add udev cleanup systemd timer
@@ -97,6 +111,9 @@
       mode: u=rw,go=r
       owner: root
       src: udev-cleanup.timer
+    notify:
+      - reload systemd
+      - (dis/en)able udev cleanup timer
 
   - name: add udev cleanup systemd service
     copy:
@@ -105,26 +122,25 @@
       mode: u=rw,go=r
       owner: root
       src: udev-cleanup.service
+    notify:
+      - reload systemd
+      - (dis/en)able udev cleanup timer
 
 - name: remove specific configurations for docker engine
   file:
     path: "{{ item }}"
     state: absent
   loop:
-  - *conf_docker
-  - *conf_grub
-  - *conf_journald
-  - *conf_systemd
-  - *conf_udev_service
-  - *conf_udev_timer
+    - *conf_docker
+    - *conf_grub
+    - *conf_journald
+    - *conf_systemd
+    - *conf_udev_service
+    - *conf_udev_timer
   when:
-  - not docker_role.engine.present
-
-- name: (dis/en)able udev cleanup timer
-  service:
-    name: udev-cleanup.timer
-    enabled: &present_bool "{{ docker_role.engine.present }}"
-  ignore_errors: &absent_bool "{{ not docker_role.engine.present }}"
+    - not docker_role.engine.present
+  notify:
+    - reload systemd
 
 - name: (un)install apt key for the official docker repository
   apt_key:
@@ -142,27 +158,19 @@
 
 - name: (un)install docker-ce stable
   apt:
-    autoremove: *absent_bool
+    autoremove: "{{ not docker_role.engine.present }}"
     name: docker-ce
     state: &latest
       "{{ 'latest' if docker_role.engine.present else 'absent' }}"
-  notify: reload dockerd
+  notify:
+    - reload systemd
+    - (dis/en)able dockerd
 
-- name: (dis/en)able dockerd
-  service:
-    name: docker
-    enabled: *present_bool
-    state: "{{ 'started' if docker_role.engine.present else 'stopped' }}"
-  # HACK to pass idempotency test in `unapply.yml`
-  # TODO remove when https://github.com/ansible/ansible/issues/31344 is fixed
-  register: result
-  changed_when: "result.changed and docker_role.engine.present"
+- name: run any notified handlers
+  meta: flush_handlers
 
 - name: check docker is installed correctly
   command: docker --version
   changed_when: false
   when:
   - *when_present
-
-- name: run any notified handlers
-  meta: flush_handlers
