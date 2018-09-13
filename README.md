@@ -44,6 +44,8 @@ if you need to query any configurations in other roles or tasks.
         swarm: *install
 ```
 
+For a bigger example, go see [our test playbooks][test].
+
 ## Support
 
 - [Apache2 License](https://choosealicense.com/licenses/apache-2.0/).
@@ -72,3 +74,4 @@ development, installation, maintenance and hosting services.
 [Doodba]: https://github.com/Tecnativa/doodba
 [galaxy]: https://galaxy.ansible.com/yajo/docker
 [Tecnativa]: https://www.tecnativa.com
+[test]: https://github.com/Tecnativa/ansible-role-docker/tree/master/tests
