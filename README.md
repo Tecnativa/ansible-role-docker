@@ -19,7 +19,7 @@ Supported operating systems:
 
 ## Role Variables
 
-See the `defaults` directory to know all the variables you are allowed to
+See the [`defaults`][] directory to know all the variables you are allowed to
 override. All the non-obvious ones are docummented inline.
 
 ## Example Playbook
@@ -63,6 +63,7 @@ This project is maintained by:
 development, installation, maintenance and hosting services.
 
 [ansible-py3]: https://docs.ansible.com/ansible/latest/reference_appendices/python_3_support.html
+[`defaults`]: https://github.com/Tecnativa/ansible-role-docker/tree/master/defaults
 [Doodba]: https://github.com/Tecnativa/doodba
 [galaxy]: https://galaxy.ansible.com/yajo/docker
 [Tecnativa]: https://www.tecnativa.com
