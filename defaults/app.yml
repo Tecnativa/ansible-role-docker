@@ -1,6 +1,0 @@
-docker_app_state: absent # FIXME Enable by default when docker-app gets stable
-docker_app_path: /usr/local/bin/docker-app
-
-# TODO Update these as new versions get released
-docker_app_version: "0.4.1"
-docker_app_checksum: a72315eea64e6b098ed0d1502643408579af60a806b000eb4fd4220d7d34fc79
