@@ -7,14 +7,14 @@
 
 - name: get hosts that are both managers and workers
   set_fact:
-    repeated_hosts:
+    docker_swarm_repeated_hosts:
       "{{ docker_swarm_manager_hosts|intersect(docker_swarm_worker_hosts) }}"
 
 - name: ensure no host is defined as manager and worker
   assert:
-    that: not repeated_hosts
+    that: not docker_swarm_repeated_hosts
     msg: >
-      Found some hosts ({{ repeated_hosts|join(", ") }}) that are configured
+      Found some hosts ({{ docker_swarm_repeated_hosts|join(", ") }}) that are configured
       both as swarm managers and workers because they match both patterns
       ({{ docker_swarm_managers_pattern }} and
       {{ docker_swarm_workers_pattern }}).
@@ -24,8 +24,8 @@
 
 - name: get all cluster ids
   set_fact:
-    swarm_clusters: "{{
-      swarm_clusters|d([])|
+    docker_swarm_clusters: "{{
+      docker_swarm_clusters|d([])|
       union([hostvars[item].docker_info.Swarm.Cluster.ID|d('')])
     }}"
   loop: "{{ docker_swarm_manager_hosts }}"
@@ -33,13 +33,15 @@
 
 - name: get unique manager cluster ids
   set_fact:
-    swarm_clusters: "{{ swarm_clusters|d([])|unique|difference(['']) }}"
+    docker_swarm_clusters:
+      "{{ docker_swarm_clusters|d([])|unique|difference(['']) }}"
 
 - name: ensure we are not working with several clusters
   assert:
-    that: swarm_clusters|length < 2
+    that: docker_swarm_clusters|length < 2
     msg: >
-      Swarm managers belong to {{ swarm_clusters|length }} different clusters.
+      Swarm managers belong to {{ docker_swarm_clusters|length }}
+      different clusters.
       There should be only only zero or one swarm clusters involved
       between all the hosts that match the specified pattern
       ({{ docker_swarm_managers_pattern }}),
@@ -51,7 +53,7 @@
     docker swarm init --advertise-addr
     {{ docker_swarm_advertise_address|quote }}
   when:
-    - not swarm_clusters
+    - not docker_swarm_clusters
     - &first inventory_hostname == docker_swarm_manager_hosts|first
 
 - import_tasks: facts.yml
@@ -64,38 +66,39 @@
     docker_swarm_token_worker:
       "{{ docker_swarm_token_worker or
           hostvars[item].docker_swarm_token_worker }}"
-    expected_manager:
-      "{{ expected_manager|d('') or hostvars[item].docker_info.Swarm.NodeID }}"
+    docker_swarm_expected_manager:
+      "{{ docker_swarm_expected_manager|d('') or
+          hostvars[item].docker_info.Swarm.NodeID }}"
   loop: "{{ docker_swarm_manager_hosts }}"
 
 - name: leave alien swarms
   import_tasks: leave.yml
   when:
     - docker_info.Swarm.LocalNodeState == 'active'
-    - docker_info.Swarm.NodeID != expected_manager
-    - expected_manager not in
+    - docker_info.Swarm.NodeID != docker_swarm_expected_manager
+    - docker_swarm_expected_manager not in
       docker_info.Swarm.RemoteManagers|map(attribute='NodeID')
 
 - name: get swarm join command for managers
   set_fact:
-    join_command: "{{ docker_swarm_token_manager }}"
+    docker_swarm_join_command: "{{ docker_swarm_token_manager }}"
   when:
     - inventory_hostname in docker_swarm_manager_hosts
     - docker_info.Swarm.LocalNodeState == 'inactive'
 
 - name: get swarm join command for workers
   set_fact:
-    join_command: "{{ docker_swarm_token_worker }}"
+    docker_swarm_join_command: "{{ docker_swarm_token_worker }}"
   when:
     - inventory_hostname in docker_swarm_worker_hosts
     - docker_info.Swarm.LocalNodeState == 'inactive'
 
 - name: join docker swarm
-  command: "{{ join_command }}"
+  command: "{{ docker_swarm_join_command }}"
   register: result
   changed_when: "'This node joined a swarm' in result.stdout"
   when:
-    - join_command is defined
+    - docker_swarm_join_command is defined
 
 - import_tasks: facts.yml
 
