@@ -10,7 +10,7 @@
   - name: install docker machine
     get_url:
       checksum: "sha256:{{
-        docker_machine_checksums[ansible_architecture]
+        lookup('vars', 'docker_machine_checksum_' + ansible_architecture)
       }}"
       dest: "{{ docker_machine_path }}"
       group: "{{ ansible_user }}"
