@@ -5,18 +5,18 @@
 
 - name: obtain swarm manager join command
   command: docker swarm join-token manager
-  register: join_manager
+  register: docker_swarm_token_manager
   changed_when: false
   failed_when: false
 
 - name: obtain swarm worker join command
   command: docker swarm join-token worker
-  register: join_worker
+  register: docker_swarm_token_worker
   changed_when: false
   failed_when: false
 
 - name: process docker facts
   set_fact:
     docker_info: "{{ docker_info.stdout|from_json }}"
-    join_manager: "{{ join_manager.stdout_lines[2]|d('')|trim }}"
-    join_worker: "{{ join_worker.stdout_lines[2]|d('')|trim }}"
+    docker_swarm_token_manager: "{{ docker_swarm_token_manager.stdout_lines[2]|d('')|trim }}"
+    docker_swarm_token_worker: "{{ docker_swarm_token_worker.stdout_lines[2]|d('')|trim }}"

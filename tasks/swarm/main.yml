@@ -1,10 +1,10 @@
 - import_tasks: present.yml
   when:
-    - docker_role.engine.present
-    - docker_role.swarm.present
+    - docker_engine_state != 'absent'
+    - docker_swarm_state != 'absent'
 
 - import_tasks: leave.yml
   when:
     # If engine is absent, the swarm should already be absent
-    - docker_role.engine.present
-    - not docker_role.swarm.present
+    - docker_engine_state != 'absent'
+    - docker_swarm_state != 'absent'

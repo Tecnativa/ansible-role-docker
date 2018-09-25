@@ -1,8 +1,8 @@
 - when:
-  - docker_role.machine.present
+  - docker_machine_state == 'present'
   block:
   - name: check current docker machine installation
-    command: "{{ docker_role.machine.path|quote }} --version"
+    command: "{{ docker_machine_path|quote }} --version"
     changed_when: false
     ignore_errors: true
     register: result
@@ -10,29 +10,29 @@
   - name: install docker machine
     get_url:
       checksum: "sha256:{{
-        docker_role.machine.checksums[ansible_architecture]
+        docker_machine_checksums[ansible_architecture]
       }}"
-      dest: "{{ docker_role.machine.path }}"
+      dest: "{{ docker_machine_path }}"
       group: "{{ ansible_user }}"
       mode: a=rx,u+w
       owner: "{{ ansible_user }}"
       url: >
         https://github.com/docker/machine/releases/download/v
-        {{- docker_role.machine.version -}}
+        {{- docker_machine_version -}}
         /docker-machine-{{ ansible_system }}-{{ ansible_architecture }}
     when:
     - result.failed|d(False) or
       not result.stdout.startswith(
-        'docker-machine version %s,'|format(docker_role.machine.version)
+        'docker-machine version %s,'|format(docker_machine_version)
       )
 
   - name: check docker machine is installed correctly
-    command: "{{ docker_role.machine.path|quote }} --version"
+    command: "{{ docker_machine_path|quote }} --version"
     changed_when: false
 
 - name: uninstall docker machine
   file:
-    path: "{{ docker_role.machine.path }}"
+    path: "{{ docker_machine_path }}"
     state: absent
   when:
-  - not docker_role.machine.present
+  - docker_machine_state == 'absent'
