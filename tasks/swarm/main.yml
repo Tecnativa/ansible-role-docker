@@ -7,4 +7,4 @@
   when:
     # If engine is absent, the swarm should already be absent
     - docker_engine_state != 'absent'
-    - docker_swarm_state != 'absent'
+    - docker_swarm_state == 'absent'
