@@ -7,20 +7,12 @@
   roles:
   - role: ../..
     vars:
-      docker_role_custom:
-        app:
-          present: true
-        bootloader: false
-        compose:
-          present: true
-        engine:
-          present: true
-          config:
-            # overlay2 driver fails inside containers
-            storage-driver: vfs
-        machine:
-          present: true
-        swarm:
-          present: true
-          managers: "{{ swarm_managers_pattern }}"
-          workers: "{{ swarm_workers_pattern }}"
+      docker_app_state: present
+      docker_bootloader: false
+      docker_compose_state: present
+      docker_engine_config_custom:
+        # overlay2 driver fails inside containers
+        storage-driver: vfs
+      docker_engine_state: present
+      docker_machine_state: present
+      docker_swarm_state: present

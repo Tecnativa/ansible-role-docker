@@ -1,0 +1,5 @@
+# Set to "present" if you need a pinned version
+docker_compose_state: latest
+
+# Set the version if you need to pin it
+docker_compose_version: null

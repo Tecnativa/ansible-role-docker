@@ -1,3 +1,12 @@
+- name: get docker configuration
+  set_fact:
+    docker_engine_config: "{{
+        docker_engine_config_default|combine(
+          docker_engine_config_custom,
+          recursive=True,
+        )
+      }}"
+
 - name: remove old docker packages, we use docker-ce today
   package:
     state: absent
@@ -19,18 +28,18 @@
   - vfs
   - zfs
   when:
-  - item != docker_role.engine.config['storage-driver'] or
-    not docker_role.engine.present
+  - item != docker_engine_config['storage-driver'] or
+    docker_engine_state == 'absent'
 
 - when:
-  - &when_present docker_role.engine.present
+  - &when_present docker_engine_state != 'absent'
   block:
   - name: create or remove docker systemd configuration folder
     file:
       mode: a=rx,u+w
       path: /etc/systemd/system/docker.service.d
       state: &directory
-        "{{ 'directory' if docker_role.engine.present else 'absent' }}"
+        "{{ docker_engine_state|replace('present', 'directory') }}"
 
   - name: allow systemd docker service to listen on configured hosts
     copy:
@@ -43,13 +52,13 @@
     notify:
       - reload systemd
       - reload dockerd
-    when: docker_role.engine.config.hosts|d(False)
+    when: docker_engine_config.hosts|d(False)
 
   - name: make dockerd listen in its default systemd-controlled socket
     file:
       path: *conf_systemd
       state: absent
-    when: not docker_role.engine.config.hosts|d(False)
+    when: not docker_engine_config.hosts|d(False)
     notify:
       - reload systemd
       - reload dockerd
@@ -62,7 +71,7 @@
 
   - name: configure docker daemon
     copy:
-      content: "{{ docker_role.engine.config|to_nice_json }}"
+      content: "{{ docker_engine_config|to_nice_json }}"
       dest: /etc/docker/daemon.json
       group: root
       mode: u=rwx,go=
@@ -138,7 +147,7 @@
     - *conf_udev_service
     - *conf_udev_timer
   when:
-    - not docker_role.engine.present
+    - docker_engine_state == 'absent'
   notify:
     - reload systemd
 
@@ -146,8 +155,7 @@
   apt_key:
     data: "{{ lookup('file', 'docker-apt-gpg.key') }}"
     id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-    state: &present_str
-      "{{ 'present' if docker_role.engine.present else 'absent' }}"
+    state: &present_str "{{ docker_engine_state }}"
 
 - name: (un)install upstream docker stable apt repository
   apt_repository:
@@ -158,10 +166,9 @@
 
 - name: (un)install docker-ce stable
   apt:
-    autoremove: "{{ not docker_role.engine.present }}"
+    autoremove: "{{ docker_engine_state == 'absent' }}"
     name: docker-ce
-    state: &latest
-      "{{ 'latest' if docker_role.engine.present else 'absent' }}"
+    state: &latest "{{ docker_engine_state|replace('present', 'latest') }}"
   notify:
     - reload systemd
     - (dis/en)able dockerd

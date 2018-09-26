@@ -19,14 +19,8 @@ Supported operating systems:
 
 ## Role Variables
 
-You are allowed to set just one dict variable: `docker_role_custom`.
-
-It must be in the same format as `docker_role_defaults`, which can be found in
-the `vars/main.yml` file. Read there to understand how it works.
-
-When the role gets executed, the first thing it will do is to combine both of
-those dicts recursively into a new `docker_role` variable. Rely on that one
-if you need to query any configurations in other roles or tasks.
+See the [`defaults`][] directory to know all the variables you are allowed to
+override. All the non-obvious ones are docummented inline.
 
 ## Example Playbook
 
@@ -35,13 +29,11 @@ if you need to query any configurations in other roles or tasks.
   roles:
   - role: yajo.docker
     vars:
-      docker_role_custom:
-        app: &install
-          present: true
-        compose: *install
-        engine: *install
-        machine: *install
-        swarm: *install
+      docker_app_state: present
+      docker_compose_state: present
+      docker_engine_state: present
+      docker_machine_state: present
+      docker_swarm_state: present
 ```
 
 For a bigger example, go see [our test playbooks][test].
@@ -71,6 +63,7 @@ This project is maintained by:
 development, installation, maintenance and hosting services.
 
 [ansible-py3]: https://docs.ansible.com/ansible/latest/reference_appendices/python_3_support.html
+[`defaults`]: https://github.com/Tecnativa/ansible-role-docker/tree/master/defaults/main
 [Doodba]: https://github.com/Tecnativa/doodba
 [galaxy]: https://galaxy.ansible.com/yajo/docker
 [Tecnativa]: https://www.tecnativa.com

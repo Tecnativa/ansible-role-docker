@@ -1,8 +1,8 @@
 - when:
-  - docker_role.app.present
+  - docker_app_state == 'present'
   block:
   - name: check current docker app installation
-    command: "{{ docker_role.app.path|quote }} --version"
+    command: "{{ docker_app_path|quote }} --version"
     changed_when: false
     register: result
     ignore_errors: true
@@ -10,7 +10,7 @@
   - when:
     - result.failed|d(False) or
       not result.stdout.startswith(
-        'docker-app version v%s,'|format(docker_role.app.version)
+        'docker-app version v%s,'|format(docker_app_version)
       )
     block:
     - name: create temporary directory to download docker-app
@@ -20,11 +20,11 @@
 
     - name: download docker app release
       get_url:
-        checksum: sha256:{{ docker_role.app.checksum }}
+        checksum: sha256:{{ docker_app_checksum }}
         dest: &tarfile "{{ tmpdir.path }}/docker-app.tar.gz"
         url: >
           https://github.com/docker/app/releases/download/v
-          {{- docker_role.app.version -}}
+          {{- docker_app_version -}}
           /docker-app-{{ ansible_system|lower }}.tar.gz
 
     - name: uncompress docker app release
@@ -35,7 +35,7 @@
 
     - name: copy docker app binary to an executable
       copy:
-        dest: "{{ docker_role.app.path }}"
+        dest: "{{ docker_app_path }}"
         group: &user "{{ ansible_user }}"
         mode: a=rx,u+w
         owner: *user
@@ -48,12 +48,12 @@
         state: absent
 
     - name: check docker app is installed correctly
-      command: "{{ docker_role.app.path|quote }} --version"
+      command: "{{ docker_app_path|quote }} --version"
       changed_when: false
 
 - name: uninstall docker-app
   file:
-    path: "{{ docker_role.app.path }}"
+    path: "{{ docker_app_path }}"
     state: absent
   when:
-  - not docker_role.app.present
+  - not docker_app_state == 'present'

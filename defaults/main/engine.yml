@@ -1,0 +1,13 @@
+docker_engine_state: present
+
+# In case you use another, it will not be updated
+docker_bootloader: grub
+
+# Combined with `docker_engine_config_default`
+# See https://docs.docker.com/engine/reference/commandline/dockerd/
+docker_engine_config_custom: {}
+
+# These limits avoid missing container logs when the log driver is
+# journald; see https://github.com/moby/moby/issues/31058
+docker_engine_journald_limit_burst: 10000
+docker_engine_journald_limit_interval: 10s

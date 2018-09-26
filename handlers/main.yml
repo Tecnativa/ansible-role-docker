@@ -1,7 +1,7 @@
 - name: update grub
   command: update-grub
   when:
-  - docker_role.bootloader == 'grub'
+  - docker_bootloader == 'grub'
 
 - name: reload systemd
   systemd:
@@ -10,18 +10,18 @@
 - name: (dis/en)able udev cleanup timer
   service:
     name: udev-cleanup.timer
-    enabled: "{{ docker_role.engine.present }}"
-  ignore_errors: "{{ not docker_role.engine.present }}"
+    enabled: "{{ docker_engine_state == 'present' }}"
+  ignore_errors: "{{ not docker_engine_state == 'present' }}"
 
 - name: (dis/en)able dockerd
   service:
     name: docker
-    enabled: "{{ docker_role.engine.present }}"
-    state: "{{ 'started' if docker_role.engine.present else 'stopped' }}"
+    enabled: "{{ docker_engine_state == 'present' }}"
+    state: "{{ 'started' if docker_engine_state == 'present' else 'stopped' }}"
   # HACK to pass idempotency test in `unapply.yml`
   # TODO remove when https://github.com/ansible/ansible/issues/31344 is fixed
   register: result
-  changed_when: "result.changed and docker_role.engine.present"
+  changed_when: "result.changed and docker_engine_state == 'present'"
   retries: 4
   delay: 5
 
@@ -31,7 +31,7 @@
     enabled: true
     state: reloaded
   when:
-  - docker_role.engine.present
+  - docker_engine_state == 'present'
 
 - name: restart journald
   service:
