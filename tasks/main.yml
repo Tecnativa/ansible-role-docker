@@ -1,3 +1,10 @@
+- name: install basic apt repos
+  apt_repository:
+    repo: deb http://archive.ubuntu.com/ubuntu {{item}} universe
+  loop:
+    - "{{ansible_distribution_release}}"
+    - "{{ansible_distribution_release}}-updates"
+
 - name: install basic harmless dependencies
   package:
     name:
