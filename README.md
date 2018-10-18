@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Tecnativa/ansible-role-docker.svg?branch=master)](https://travis-ci.org/Tecnativa/ansible-role-docker)
 [![GitHub license](https://img.shields.io/github/license/Tecnativa/ansible-role-docker.svg)](https://github.com/Tecnativa/ansible-role-docker/blob/master/LICENSE)
-[![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-yajo.docker-blue.svg)][galaxy]
+[![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-tecnativa.docker-blue.svg)][galaxy]
 
 Set up docker servers with all of the docker project software stack.
 
@@ -27,7 +27,7 @@ override. All the non-obvious ones are docummented inline.
 ```yaml
 - hosts: docker
   roles:
-  - role: yajo.docker
+  - role: tecnativa.docker
     vars:
       docker_app_state: present
       docker_compose_state: present
