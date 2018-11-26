@@ -12,6 +12,7 @@
     - gzip
     - iproute2
     - python{% if ansible_python.version.major == 3 %}3{% endif %}-pip
+    - python{% if ansible_python.version.major == 3 %}3{% endif %}-setuptools
     - tar
     state: present
 
