@@ -1,59 +1,59 @@
 - when:
-  - docker_app_state == 'present'
+    - docker_app_state == 'present'
   block:
-  - name: check current docker app installation
-    command: "{{ docker_app_path|quote }} --version"
-    changed_when: false
-    register: result
-    ignore_errors: true
-
-  - when:
-    - result.failed|d(False) or
-      not result.stdout.startswith(
-        'docker-app version v%s,'|format(docker_app_version)
-      )
-    block:
-    - name: create temporary directory to download docker-app
-      tempfile:
-        state: directory
-      register: tmpdir
-
-    - name: download docker app release
-      get_url:
-        checksum: sha256:{{ docker_app_checksum }}
-        dest: &tarfile "{{ tmpdir.path }}/docker-app.tar.gz"
-        url: >
-          https://github.com/docker/app/releases/download/v
-          {{- docker_app_version -}}
-          /docker-app-{{ ansible_system|lower }}.tar.gz
-
-    - name: uncompress docker app release
-      unarchive:
-        dest: &tmpdir "{{ tmpdir.path }}"
-        remote_src: true
-        src: *tarfile
-
-    - name: copy docker app binary to an executable
-      copy:
-        dest: "{{ docker_app_path }}"
-        group: &user "{{ ansible_user }}"
-        mode: a=rx,u+w
-        owner: *user
-        remote_src: true
-        src: "{{ tmpdir.path }}/docker-app-{{ ansible_system|lower }}"
-
-    - name: remove temporary installation files
-      file:
-        path: *tmpdir
-        state: absent
-
-    - name: check docker app is installed correctly
+    - name: check current docker app installation
       command: "{{ docker_app_path|quote }} --version"
       changed_when: false
+      register: result
+      ignore_errors: true
+
+    - when:
+        - result.failed|d(False) or
+          not result.stdout.startswith(
+          'docker-app version v%s,'|format(docker_app_version)
+          )
+      block:
+        - name: create temporary directory to download docker-app
+          tempfile:
+            state: directory
+          register: tmpdir
+
+        - name: download docker app release
+          get_url:
+            checksum: sha256:{{ docker_app_checksum }}
+            dest: &tarfile "{{ tmpdir.path }}/docker-app.tar.gz"
+            url: >
+              https://github.com/docker/app/releases/download/v
+              {{- docker_app_version -}}
+              /docker-app-{{ ansible_system|lower }}.tar.gz
+
+        - name: uncompress docker app release
+          unarchive:
+            dest: &tmpdir "{{ tmpdir.path }}"
+            remote_src: true
+            src: *tarfile
+
+        - name: copy docker app binary to an executable
+          copy:
+            dest: "{{ docker_app_path }}"
+            group: &user "{{ ansible_user }}"
+            mode: a=rx,u+w
+            owner: *user
+            remote_src: true
+            src: "{{ tmpdir.path }}/docker-app-{{ ansible_system|lower }}"
+
+        - name: remove temporary installation files
+          file:
+            path: *tmpdir
+            state: absent
+
+        - name: check docker app is installed correctly
+          command: "{{ docker_app_path|quote }} --version"
+          changed_when: false
 
 - name: uninstall docker-app
   file:
     path: "{{ docker_app_path }}"
     state: absent
   when:
-  - not docker_app_state == 'present'
+    - not docker_app_state == 'present'

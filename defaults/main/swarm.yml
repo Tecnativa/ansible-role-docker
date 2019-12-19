@@ -1,8 +1,7 @@
 docker_swarm_state: present
 
 # Define the {IP/interface}[:port] where to listen for swarm nodes
-docker_swarm_advertise_address:
-  "{{ ansible_default_ipv4.address|d('eth0') }}"
+docker_swarm_advertise_address: "{{ ansible_default_ipv4.address|d('eth0') }}"
 
 # These are ansible host patterns that match a swarm;
 # see `tests/inventory.cfg` as an example to have more than 1 swarm

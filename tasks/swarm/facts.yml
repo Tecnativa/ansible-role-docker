@@ -1,5 +1,5 @@
 - name: obtain docker info
-  command: docker info --format {{ "{{json .}}"|quote }}
+  command: docker info --format {{ "{{ json . }}"|quote }}
   changed_when: false
   register: docker_info
 

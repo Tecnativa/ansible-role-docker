@@ -1,0 +1,27 @@
+default_language_version:
+  python: python3
+repos:
+  - repo: https://github.com/prettier/prettier
+    rev: "1.19.1"
+    hooks:
+      - id: prettier
+  # TODO Enable this ansible-lint when fixed
+  # https://github.com/ansible/ansible-lint/issues/507 and
+  # https://github.com/ansible/ansible-lint/issues/636.
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v4.1.1a5
+    hooks:
+      - id: ansible-lint
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: trailing-whitespace

@@ -8,4 +8,4 @@
   command: docker-compose --version
   changed_when: false
   when:
-  - docker_compose_state != 'absent'
+    - docker_compose_state != 'absent'

@@ -1,7 +1,7 @@
 - name: update grub
   command: update-grub
   when:
-  - docker_bootloader == 'grub'
+    - docker_bootloader == 'grub'
 
 - name: reload systemd
   systemd:
@@ -31,7 +31,7 @@
     enabled: true
     state: reloaded
   when:
-  - docker_engine_state == 'present'
+    - docker_engine_state == 'present'
 
 - name: restart journald
   service:

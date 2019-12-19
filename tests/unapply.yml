@@ -5,11 +5,11 @@
 
 - hosts: test-playground
   roles:
-  - role: ../..
-    vars:
-      docker_app_state: absent
-      docker_bootloader: false
-      docker_compose_state: absent
-      docker_engine_state: absent
-      docker_machine_state: absent
-      docker_swarm_state: absent
+    - role: ../..
+      vars:
+        docker_app_state: absent
+        docker_bootloader: false
+        docker_compose_state: absent
+        docker_engine_state: absent
+        docker_machine_state: absent
+        docker_swarm_state: absent

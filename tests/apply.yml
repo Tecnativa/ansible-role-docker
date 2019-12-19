@@ -5,14 +5,14 @@
 
 - hosts: test-playground
   roles:
-  - role: ../..
-    vars:
-      docker_app_state: present
-      docker_bootloader: false
-      docker_compose_state: present
-      docker_engine_config_custom:
-        # overlay2 driver fails inside containers
-        storage-driver: vfs
-      docker_engine_state: present
-      docker_machine_state: present
-      docker_swarm_state: present
+    - role: ../..
+      vars:
+        docker_app_state: present
+        docker_bootloader: false
+        docker_compose_state: present
+        docker_engine_config_custom:
+          # overlay2 driver fails inside containers
+          storage-driver: vfs
+        docker_engine_state: present
+        docker_machine_state: present
+        docker_swarm_state: present

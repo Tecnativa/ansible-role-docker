@@ -1,14 +1,11 @@
 - name: get swarm host lists
   set_fact:
-    docker_swarm_manager_hosts:
-      "{{ query('inventory_hostnames', docker_swarm_managers_pattern) }}"
-    docker_swarm_worker_hosts:
-      "{{ query('inventory_hostnames', docker_swarm_workers_pattern) }}"
+    docker_swarm_manager_hosts: "{{ query('inventory_hostnames', docker_swarm_managers_pattern) }}"
+    docker_swarm_worker_hosts: "{{ query('inventory_hostnames', docker_swarm_workers_pattern) }}"
 
 - name: get hosts that are both managers and workers
   set_fact:
-    docker_swarm_repeated_hosts:
-      "{{ docker_swarm_manager_hosts|intersect(docker_swarm_worker_hosts) }}"
+    docker_swarm_repeated_hosts: "{{ docker_swarm_manager_hosts|intersect(docker_swarm_worker_hosts) }}"
 
 - name: ensure no host is defined as manager and worker
   assert:
@@ -27,14 +24,13 @@
     docker_swarm_clusters: "{{
       docker_swarm_clusters|d([])|
       union([hostvars[item].docker_info.Swarm.Cluster.ID|d('')])
-    }}"
+      }}"
   loop: "{{ docker_swarm_manager_hosts }}"
   when: "'Cluster' in hostvars[item].docker_info.Swarm"
 
 - name: get unique manager cluster ids
   set_fact:
-    docker_swarm_clusters:
-      "{{ docker_swarm_clusters|d([])|unique|difference(['']) }}"
+    docker_swarm_clusters: "{{ docker_swarm_clusters|d([])|unique|difference(['']) }}"
 
 - name: ensure we are not working with several clusters
   assert:
@@ -60,15 +56,12 @@
 
 - name: share necessary swarm facts
   set_fact:
-    docker_swarm_token_manager:
-      "{{ docker_swarm_token_manager or
-          hostvars[item].docker_swarm_token_manager }}"
-    docker_swarm_token_worker:
-      "{{ docker_swarm_token_worker or
-          hostvars[item].docker_swarm_token_worker }}"
-    docker_swarm_expected_manager:
-      "{{ docker_swarm_expected_manager|d('') or
-          hostvars[item].docker_info.Swarm.NodeID }}"
+    docker_swarm_token_manager: "{{ docker_swarm_token_manager or
+      hostvars[item].docker_swarm_token_manager }}"
+    docker_swarm_token_worker: "{{ docker_swarm_token_worker or
+      hostvars[item].docker_swarm_token_worker }}"
+    docker_swarm_expected_manager: "{{ docker_swarm_expected_manager|d('') or
+      hostvars[item].docker_info.Swarm.NodeID }}"
   loop: "{{ docker_swarm_manager_hosts }}"
 
 - name: leave alien swarms
@@ -117,7 +110,7 @@
     'nested',
     swarm_nodes.stdout_lines,
     docker_swarm_manager_hosts,
-  ) }}"
+    ) }}"
   when:
     - docker_info.Swarm.ControlAvailable
     - item.0 == hostvars[item.1].docker_info.Swarm.NodeID
@@ -130,7 +123,7 @@
     'nested',
     swarm_nodes.stdout_lines,
     docker_swarm_worker_hosts,
-  ) }}"
+    ) }}"
   when:
     - docker_info.Swarm.ControlAvailable
     - item.0 == hostvars[item.1].docker_info.Swarm.NodeID

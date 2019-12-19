@@ -27,13 +27,13 @@ override. All the non-obvious ones are docummented inline.
 ```yaml
 - hosts: docker
   roles:
-  - role: tecnativa.docker
-    vars:
-      docker_app_state: present
-      docker_compose_state: present
-      docker_engine_state: present
-      docker_machine_state: present
-      docker_swarm_state: present
+    - role: tecnativa.docker
+      vars:
+        docker_app_state: present
+        docker_compose_state: present
+        docker_engine_state: present
+        docker_machine_state: present
+        docker_swarm_state: present
 ```
 
 For a bigger example, go see [our test playbooks][test].
@@ -57,14 +57,14 @@ For a bigger example, go see [our test playbooks][test].
 
 This project is maintained by:
 
-[![Tecnativa logo](https://www.tecnativa.com/logo.png "Tecnativa")][Tecnativa]
+[![Tecnativa logo](https://www.tecnativa.com/logo.png "Tecnativa")][tecnativa]
 
 [Tecnativa][] is an IT consulting company specialized in Odoo and provides Odoo
 development, installation, maintenance and hosting services.
 
 [ansible-py3]: https://docs.ansible.com/ansible/latest/reference_appendices/python_3_support.html
 [`defaults`]: https://github.com/Tecnativa/ansible-role-docker/tree/master/defaults/main
-[Doodba]: https://github.com/Tecnativa/doodba
+[doodba]: https://github.com/Tecnativa/doodba
 [galaxy]: https://galaxy.ansible.com/yajo/docker
-[Tecnativa]: https://www.tecnativa.com
+[tecnativa]: https://www.tecnativa.com
 [test]: https://github.com/Tecnativa/ansible-role-docker/tree/master/tests
