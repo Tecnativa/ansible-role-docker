@@ -2,4 +2,6 @@
 docker_compose_state: latest
 
 # Set the version if you need to pin it
-docker_compose_version: null
+# HACK https://github.com/docker/compose/issues/6934
+# TODO Set to null after 1.25.1 is released
+docker_compose_version: "!=1.25.0"
