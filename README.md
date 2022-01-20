@@ -16,6 +16,7 @@ Supported operating systems:
 
   - 16.04
   - 18.04
+  - 20.04
 
 ## Role Variables
 
