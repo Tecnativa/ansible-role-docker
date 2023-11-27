@@ -54,7 +54,7 @@
     {{ docker_swarm_advertise_address|quote }}
   when:
     - not docker_swarm_clusters
-    - "{{ docker_swarm_manager_hosts|length > 0 and inventory_hostname == docker_swarm_manager_hosts|first if 'ubuntu2204' in group_names else inventory_hostname == docker_swarm_manager_hosts|first }}"
+    - "{{ docker_swarm_manager_hosts|length > 0 and inventory_hostname == docker_swarm_manager_hosts|first if 'modern_servers' in group_names else inventory_hostname == docker_swarm_manager_hosts|first }}"
 
 - import_tasks: facts.yml
 
