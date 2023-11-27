@@ -2,7 +2,7 @@
   pip:
     name: docker-compose
     state: "{{ docker_compose_state }}"
-    version: "{{ docker_compose_version if 'modern_servers' not in group_names else omit }}"
+    version: "{{ docker_compose_version if 'compose_v2_servers' not in group_names else omit }}"
 
 - name: check docker compose is installed correctly
   command: docker-compose --version
