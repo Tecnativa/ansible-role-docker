@@ -40,6 +40,9 @@ override. All the non-obvious ones are docummented inline.
 
 For a bigger example, go see [our test playbooks][test].
 
+## Docker compose v2 filtered by host group
+A feature has been added that allows the execution of the command to install Docker Compose on hosts using operating systems that by default install Docker Compose v2. This is done in the file https://github.com/Tecnativa/ansible-role-docker/blob/master/tasks/compose.yml, checking if the host belongs to the compose_v2_servers group.
+
 ## Support
 
 - [Apache2 License](https://choosealicense.com/licenses/apache-2.0/).
