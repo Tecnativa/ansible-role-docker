@@ -1,11 +1,24 @@
-- name: (un)install docker compose
+- name: (un)install docker compose v1
   pip:
     name: docker-compose
-    state: "{{ docker_compose_state }}"
+    state: "{{ 'absent' if 'compose_v2_servers' in group_names else docker_compose_state }}"
     version: "{{ docker_compose_version if 'compose_v2_servers' not in group_names else omit }}"
 
-- name: check docker compose is installed correctly
+- name: (un)install docker compose v2
+  package:
+    name: docker-compose-plugin
+    state: "{{ 'absent' if 'compose_v2_servers' not in group_names else docker_compose_state }}"
+
+- name: check docker compose v1 is installed correctly
   command: docker-compose --version
   changed_when: false
   when:
   - docker_compose_state != 'absent'
+  - "'compose_v2_servers' not in group_names"
+
+- name: check docker compose v2 is installed correctly
+  command: docker compose version
+  changed_when: false
+  when:
+  - docker_compose_state != 'absent'
+  - "'compose_v2_servers' in group_names"
