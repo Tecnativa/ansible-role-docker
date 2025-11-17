@@ -164,10 +164,10 @@
           {{ ansible_lsb['codename'] }} stable
     state: *present_str
 
-- name: (un)install docker-ce stable
+- name: (un)install docker engine
   apt:
     autoremove: "{{ docker_engine_state == 'absent' }}"
-    name: docker-ce
+    name: "{{ docker_engine_package }}"
     state: &latest "{{ docker_engine_state|replace('present', 'latest') }}"
   notify:
     - reload systemd
