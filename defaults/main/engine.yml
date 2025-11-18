@@ -11,3 +11,6 @@ docker_engine_config_custom: {}
 # journald; see https://github.com/moby/moby/issues/31058
 docker_engine_journald_limit_burst: 10000
 docker_engine_journald_limit_interval: 10s
+
+# You can use docker.io for Ubuntu package, or also specify a version
+docker_engine_package: docker-ce # Official upstream Docker package
